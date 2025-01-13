@@ -4,8 +4,10 @@ Ex2 - Foundation of Object-Oriented and Recursion
 This project focuses on designing and implementing a basic spreadsheet, illustrating object-oriented programming (OOP) principles. The spreadsheet is represented as a two-dimensional table (2D array), where each cell can contain one of the following:
 - **Text (String)**
 - **Number (Double)**
-- **Formula (Formula)**, dynamically calculated.
-*In the code we use the stdDraw class.
+- **Formula (Formula)**, A formula that contains numbers, and can also make references for matching, and settling the values.
+
+  
+**In the code we use the stdDraw class.
 
 ### Supported Formula Types:
 1. `=number` – A direct numeric value.
