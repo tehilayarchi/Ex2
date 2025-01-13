@@ -81,15 +81,4 @@ public class CellEntry implements Index2D {
         return Integer.parseInt(index.substring(1));
     }
 
-    /**
-     * Validates the format of a cell reference.
-     * The valid format is one or more letters (uppercase or lowercase) followed by a number.
-     *
-     * @param ref The reference string to be validated.
-     * @return true if the reference is valid, false otherwise.
-     */
-    public static boolean isValidCellReference(String ref) {
-        // The valid format: letters (uppercase or lowercase) followed by a number
-        return ref != null && ref.matches("[A-Za-z]+\\d+");
-    }
 }

@@ -1,15 +1,14 @@
 /**
- * Represents a spreadsheet cell that can store text, numbers, or formulas.
- * Handles formula evaluation, data type detection, and referencing other cells.
+ * SCell represents a cell in a spreadsheet that can store text, numbers, or formulas.
+ * It handles formula evaluation, data type detection, and references to other cells.
  *
- * Methods:
- * - setData(String s, Sheet sheet): Updates cell content and recalculates its type and value.
- * - getData(): Returns the original input of the cell.
- * - updateTypeAndValue(): Determines cell type (text, number, or formula) and updates its value.
- * - evalForm(String form, Sheet sheet): Evaluates a formula using a sheet for cell references.
- * - evalExpr(String exp): Evaluates mathematical expressions with nested parentheses and operators.
+ * Key methods:
+ * - setData(String s, Sheet sheet): Updates the cell's content and recalculates its value and type.
+ * - getData(): Returns the original content of the cell.
+ * - updateTypeAndValue(): Identifies the data type (text, number, or formula) and updates its value.
+ * - evalForm(String form, Sheet sheet): Evaluates a formula, replacing cell references with their values.
+ * - evalExpr(String exp): Evaluates mathematical expressions, handling nested parentheses and operators.
  */
-
 public class SCell implements Cell {
     private String data; // The calculated value displayed in the cell
     private String originalData; // The original value entered
@@ -137,24 +136,24 @@ public class SCell implements Cell {
 
     private static String replaceCellReferences(String form, Sheet sheet) {
         StringBuilder updatedForm = new StringBuilder();
-        String[] tokens = form.split("(?<=[-+*/()])|(?=[-+*/()])"); // Split by operators
+        String[] tokens = form.split("(?<=[-+*/()])|(?=[-+*/()])"); // חלוקה לפי אופרטורים ותווים
         for (String token : tokens) {
             token = token.trim();
-            if (token.matches("[A-Za-z]+\\d+")) { // Cell address detection
+            if (token.matches("[A-Za-z]+\\d+")) { // אם זה כתובת תא
                 Cell cell = sheet.get(token);
-                if (cell != null) {
-                    // If the cell exists, check if it’s empty or not
-                    String cellValue = cell.getData().isEmpty() ? Ex2Utils.ERR_FORM : cell.getData();
-                    updatedForm.append(cellValue);
+                if (cell == null || cell.getData().isEmpty()) {
+                    // תא ריק או לא קיים -> שגיאה
+                    updatedForm.append(Ex2Utils.ERR_FORM);
                 } else {
-                    updatedForm.append("0"); // Empty cell
+                    updatedForm.append(cell.toString()); // משתמש בערך המחושב
                 }
             } else {
-                updatedForm.append(token); // Regular token
+                updatedForm.append(token); // תו רגיל
             }
         }
         return updatedForm.toString();
     }
+
 
     public static double evalExpr(String exp) {
         exp = exp.replaceAll("\\s", ""); // Removes unnecessary spaces
@@ -195,7 +194,7 @@ public class SCell implements Cell {
             case '-' -> leftValue - rightValue;
             case '*' -> leftValue * rightValue;
             case '/' -> leftValue / rightValue;
-            default -> throw new IllegalArgumentException("Invalid operator: " + operator);
+            default -> throw new IllegalArgumentException("ERR");
         };
     }
 
@@ -241,7 +240,7 @@ public class SCell implements Cell {
                 }
             }
         }
-        throw new IllegalArgumentException("Unmatched parentheses in expression: " + exp);
+        throw new IllegalArgumentException("ERR");
     }
 
     private static boolean isMatchingParentheses(String expression) {
