@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SCell_Tests {
+public class SCell_Test {
 
     @Test
     public void testIsNumber() {
