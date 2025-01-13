@@ -5,7 +5,7 @@ This project focuses on designing and implementing a basic spreadsheet, illustra
 - **Text (String)**
 - **Number (Double)**
 - **Formula (Formula)**, dynamically calculated.
-- In the code we use the stdDraw class.
+*In the code we use the stdDraw class.
 
 ### Supported Formula Types:
 1. `=number` – A direct numeric value.
