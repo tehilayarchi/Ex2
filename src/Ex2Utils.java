@@ -1,7 +1,7 @@
 /**
- * מחלקה זו מכילה סט קבועים עבור Ex2 (I2CS, ArielU 2025A),
- * כפי שמוגדר ב: https://docs.google.com/document/d/1-18T-dj00apE4k1qmpXGOaqttxLn-Kwi/edit?usp=sharing&ouid=113711744349547563645&rtpof=true&sd=true
- * אל תשנה את המחלקה הזו!
+ * This class contains a set of constants for Ex2 (I2CS, ArielU 2025A),
+ * As defined in: https://docs.google.com/document/d/1-18T-dj00apE4k1qmpXGOaqttxLn-Kwi/edit?usp=sharing&ouid=113711744349547563645&rtpof=true&sd=true
+ * Do NOT change this class!
  *
  */
 public class Ex2Utils {
@@ -16,7 +16,7 @@ public class Ex2Utils {
     public static final String EMPTY_CELL = "";
     public static  final String[] ABC= {"A","B","C","D","E","F","G","H","I","J","K","L","O","M","N","P","Q","R","S","T","U","V","W","X","Y","Z"};
 
-    // ****** לא ממומש ב-Ex2!! ******
+    // ****** not implemented in Ex2!! ******
     // public static final String[] FUNCTIONS = {"if", "sin", "cos", "pow", "min", "max"};
     // public static String[] B_OPS = {"<", ">", "==","!=", "<=", ">="};
 }

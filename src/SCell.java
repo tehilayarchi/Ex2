@@ -11,34 +11,33 @@
  */
 
 public class SCell implements Cell {
-    private String data; // הערך המחושב המוצג בתא
-    private String originalData; // הערך המקורי שהוזן
+    private String data; // The calculated value displayed in the cell
+    private String originalData; // The original value entered
     private int type;
     private Sheet sheet;
 
-    // בנאי: יוצר תא חדש עם נתונים התחלתיים
+    // Constructor: Creates a new cell with initial data
     public SCell(String data) {
         setData(data);
     }
 
     @Override
     public String getData() {
-        return originalData; // מחזיר את הערך המקורי שהוזן
+        return originalData; // Returns the original value entered
     }
-
 
     @Override
     public void setData(String s, Sheet sheet) {
-        this.originalData = s; // שמירת הערך המקורי
+        this.originalData = s; // Saves the original value
         this.sheet = sheet;
-        updateTypeAndValue(); // עדכון סוג התא והתוצאה המחושבת
-    }
-    @Override
-    public void setData(String s) {
-        this.originalData = s; // שמירת הערך המקורי
-        updateTypeAndValue(); // עדכון סוג התא והתוצאה המחושבת
+        updateTypeAndValue(); // Updates the cell type and calculated result
     }
 
+    @Override
+    public void setData(String s) {
+        this.originalData = s; // Saves the original value
+        updateTypeAndValue(); // Updates the cell type and calculated result
+    }
 
     @Override
     public int getType() {
@@ -52,57 +51,55 @@ public class SCell implements Cell {
 
     @Override
     public int getOrder() {
-        return 0; // לא נדרש יישום
+        return 0;
     }
 
     @Override
     public void setOrder(int t) {
-        // לא נדרש יישום
     }
+
     public void updateTypeAndValue() {
         if (originalData == null || originalData.isEmpty()) {
-            // תא ריק
+            // Empty cell
             data = "";
             type = Ex2Utils.TEXT;
         } else if (isFormula(originalData)) {
-            // זיהוי נוסחה
+            // Formula detection
             type = Ex2Utils.FORM;
 
-            // חישוב ערך הנוסחה
+            // Calculate formula value
             if (sheet == null) {
-                // אין גיליון -> שגיאה
+                // No sheet -> error
                 data = Ex2Utils.ERR_FORM;
                 type = Ex2Utils.ERR_FORM_FORMAT;
             } else {
-                String result = evalForm(originalData, sheet); // חישוב הנוסחה
+                String result = evalForm(originalData, sheet); // Formula calculation
                 if (result.equals("ERROR") || result.equals(Ex2Utils.ERR_FORM)) {
-                    // שגיאה בערך הנוסחה
+                    // Formula value error
                     data = Ex2Utils.ERR_FORM;
                     type = Ex2Utils.ERR_FORM_FORMAT;
                 } else {
-                    // תוצאה תקינה של נוסחה
+                    // Valid formula result
                     data = result;
                 }
             }
         } else if (isNumber(originalData)) {
-            // זיהוי מספר
+            // Number detection
             try {
                 double number = Double.parseDouble(originalData);
                 data = String.valueOf(number);
                 type = Ex2Utils.NUMBER;
             } catch (NumberFormatException e) {
-                // במקרה של שגיאה -> טקסט
+                // On error -> text
                 data = originalData;
                 type = Ex2Utils.TEXT;
             }
         } else {
-            // כל דבר אחר -> טקסט רגיל
+            // Anything else -> plain text
             data = originalData;
             type = Ex2Utils.TEXT;
         }
     }
-
-
 
     public boolean isNumber(String str) {
         try {
@@ -123,10 +120,10 @@ public class SCell implements Cell {
                 form = form.substring(1).trim();
             }
 
-            // החלפת כתובות תאים בערכים שלהם
+            // Replace cell references with their values
             form = replaceCellReferences(form, sheet);
 
-            // אם יש ERR_FORM, אז הפונקציה תעצר ותשיב את השגיאה
+            // If there’s ERR_FORM, the function stops and returns the error
             if (form.contains(Ex2Utils.ERR_FORM)) {
                 return Ex2Utils.ERR_FORM;
             }
@@ -138,32 +135,29 @@ public class SCell implements Cell {
         }
     }
 
-
     private static String replaceCellReferences(String form, Sheet sheet) {
         StringBuilder updatedForm = new StringBuilder();
-        String[] tokens = form.split("(?<=[-+*/()])|(?=[-+*/()])"); // פיצול לפי אופרטורים
+        String[] tokens = form.split("(?<=[-+*/()])|(?=[-+*/()])"); // Split by operators
         for (String token : tokens) {
             token = token.trim();
-            if (token.matches("[A-Za-z]+\\d+")) { // זיהוי כתובת תא
+            if (token.matches("[A-Za-z]+\\d+")) { // Cell address detection
                 Cell cell = sheet.get(token);
                 if (cell != null) {
-                    // אם התא קיים, נבדוק אם הוא ריק או לא
+                    // If the cell exists, check if it’s empty or not
                     String cellValue = cell.getData().isEmpty() ? Ex2Utils.ERR_FORM : cell.getData();
                     updatedForm.append(cellValue);
                 } else {
-                    updatedForm.append("0"); // תא ריק
+                    updatedForm.append("0"); // Empty cell
                 }
             } else {
-                updatedForm.append(token); // טוקן רגיל
+                updatedForm.append(token); // Regular token
             }
         }
         return updatedForm.toString();
     }
 
-
-
     public static double evalExpr(String exp) {
-        exp = exp.replaceAll("\\s", ""); // מסיר רווחים מיותרים
+        exp = exp.replaceAll("\\s", ""); // Removes unnecessary spaces
 
         while (exp.startsWith("(") && exp.endsWith(")") && isMatchingParentheses(exp)) {
             exp = exp.substring(1, exp.length() - 1);
@@ -270,8 +264,6 @@ public class SCell implements Cell {
 
     @Override
     public String toString() {
-        return data; // מחזיר את התוצאה המחושבת המוצגת בתא
+        return data;
     }
-
-
 }

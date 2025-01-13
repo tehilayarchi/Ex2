@@ -1,178 +1,177 @@
 import java.io.*;
-// ייבוא מחלקות לעבודה עם קלט ופלט של קבצים: FileReader, FileWriter, BufferedReader, BufferedWriter וכו'.
+// Importing classes for file input/output operations: FileReader, FileWriter, BufferedReader, BufferedWriter, etc.
 
-// מחלקה Sheet_Ex2Sheet מממשת את הממשק Sheet
+/**
+ * The Ex2Sheet class implements the Sheet interface.
+ * This class represents a spreadsheet where each cell can store text, numbers, or formulas.
+ * The sheet supports functions for getting, setting, and evaluating cell values, as well as saving and loading the sheet from files.
+ */
 public class Ex2Sheet implements Sheet {
     private Cell[][] table;
-    // מערך דו-ממדי של אובייקטים מסוג Cell, מייצג את הגיליון כטבלה.
+    // A 2D array of Cell objects, representing the sheet as a table.
 
-    // בנאי שמאפשר ליצור גיליון בגודל מותאם אישית
+    // Constructor that creates a sheet with a custom size
     public Ex2Sheet(int x, int y) {
         table = new SCell[x][y];
-        // אתחול הטבלה כמערך דו-ממדי של Cell_SCell בגודל x על y.
+        // Initializes the table as a 2D array of SCell objects with dimensions x by y.
         for (int i = 0; i < x; i++) {
-            // לולאה לעבור על כל השורות.
+            // Loop to iterate over all rows.
             for (int j = 0; j < y; j++) {
-                // לולאה לעבור על כל העמודות בשורה הנוכחית.
+                // Loop to iterate over all columns in the current row.
                 table[i][j] = new SCell(Ex2Utils.EMPTY_CELL);
-                // יצירת תא ריק והכנסתו למקום המתאים בטבלה.
+                // Creates an empty cell and places it in the correct position in the table.
             }
         }
     }
 
-    public Ex2Sheet() {     // בנאי ברירת מחדל: יוצר גיליון עם גודל מוגדר מראש (רוחב וגובה)
-        this(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);             // קריאה לבנאי הראשי עם המידות הקבועות ב-Ex2Utils.
-
+    public Ex2Sheet() {     // Default constructor: creates a sheet with predefined width and height
+        this(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);             // Calls the main constructor with fixed dimensions from Ex2Utils.
     }
 
     @Override
-    public String value(int x, int y) {     // פונקציה שמחזירה את הערך של תא מסוים בגיליון
+    public String value(int x, int y) {     // Returns the value of a specific cell in the sheet
 
-        if (isIn(x, y)) {                 // בדיקה אם המיקום (x, y) נמצא בגבולות הגיליון.
-            return get(x, y).toString();            // מחזיר את הערך של התא כ-String.
-
+        if (isIn(x, y)) {                 // Checks if the coordinates (x, y) are within the sheet boundaries.
+            return get(x, y).toString();            // Returns the value of the cell as a String.
         }
-        return Ex2Utils.EMPTY_CELL;        // אם מחוץ לטווח, מחזיר ערך ריק (EMPTY_CELL).
-
+        return Ex2Utils.EMPTY_CELL;        // If out of bounds, returns an empty value (EMPTY_CELL).
     }
 
     @Override
-    public Cell get(int x, int y) {       // פונקציה שמחזירה אובייקט Cell לפי המיקום (x, y)
+    public Cell get(int x, int y) {       // Returns a Cell object by its coordinates (x, y)
 
-        if (isIn(x, y)) {                             // בדיקה אם המיקום (x, y) נמצא בגבולות הטבלה.
-            return table[x][y];                       // מחזיר את התא שנמצא במיקום זה.
+        if (isIn(x, y)) {                             // Checks if the coordinates (x, y) are within the bounds of the table.
+            return table[x][y];                       // Returns the cell at the specified position.
         }
-        return null;                                        // אם מחוץ לטווח, מחזיר null.
+        return null;                                        // If out of bounds, returns null.
     }
 
-    // פונקציה שמחזירה תא לפי מחרוזת של קואורדינטות (למשל "A1")
+    // Function that returns a cell by a string of coordinates (e.g. "A1")
     @Override
     public Cell get(String cords) {
         CellEntry index = new CellEntry(cords);
-        // ממיר את הקואורדינטות בפורמט טקסטואלי לאינדקסים מספריים.
+        // Converts the coordinates in text format to numeric indexes.
         if (index.isValid()) {
-            // בודק אם הקואורדינטות תקינות.
+            // Checks if the coordinates are valid.
             int x = index.getX();
-            // מקבל את אינדקס השורה.
+            // Gets the row index.
             int y = index.getY();
-            // מקבל את אינדקס העמודה.
+            // Gets the column index.
             return get(x, y);
-            // מחזיר את התא שבמיקום.
+            // Returns the cell at the specified position.
         }
         return null;
-        // אם הקואורדינטות לא תקינות, מחזיר null.
+        // If the coordinates are invalid, returns null.
     }
 
-    // פונקציה שמחזירה את הרוחב (מספר השורות) של הטבלה
+    // Function that returns the width (number of rows) of the table
     @Override
     public int width() {
         return table.length;
-        // מחזיר את אורך המערך (מספר השורות בטבלה).
+        // Returns the length of the array (number of rows in the table).
     }
 
-    // פונקציה שמחזירה את הגובה (מספר העמודות) של הטבלה
+    // Function that returns the height (number of columns) of the table
     @Override
     public int height() {
         return table[0].length;
-        // מחזיר את מספר העמודות של השורה הראשונה.
+        // Returns the number of columns in the first row.
     }
 
-    // פונקציה שמגדירה ערך חדש לתא מסוים בגיליון
+    // Function that sets a new value for a specific cell in the sheet
     @Override
     public void set(int x, int y, String s) {
         if (isIn(x, y)) {
-            // בדיקה אם המיקום (x, y) בגבולות הטבלה.
+            // Checks if the coordinates (x, y) are within the bounds of the table.
             table[x][y] = new SCell(s);
-            // יוצר תא חדש עם הערך הניתן ושומר אותו בטבלה.
+            // Creates a new cell with the given value and stores it in the table.
             table[x][y].setData(s, this);
-            // מעדכן את הנתונים של התא ומעביר הפניה לגיליון למקרה שיש תלות בתאים אחרים.
+            // Updates the data of the cell and passes a reference to the sheet in case there are dependencies on other cells.
         }
     }
 
-    // מבצע הערכה מחדש לכל התאים בגיליון
+    // Re-evaluates all cells in the sheet
     @Override
     public void eval() {
         for (int i = 0; i < width(); i++) {
-            // לולאה על כל השורות.
+            // Loop through all rows.
             for (int j = 0; j < height(); j++) {
-                // לולאה על כל העמודות בשורה הנוכחית.
+                // Loop through all columns in the current row.
                 Cell cell = get(i, j);
-                // מקבל את התא הנוכחי.
+                // Gets the current cell.
                 if (cell != null) {
-                    // אם התא לא ריק.
+                    // If the cell is not empty.
                     cell.setData(cell.getData(), this);
-                    // מעדכן את הנתונים של התא.
+                    // Updates the cell's data.
                 }
             }
         }
     }
 
-    // בודק אם קואורדינטות מסוימות בתחום הגיליון
+    // Checks if a set of coordinates is within the sheet's bounds
     @Override
     public boolean isIn(int xx, int yy) {
         return xx >= 0 && xx < width() && yy >= 0 && yy < height();
-        // מחזיר true אם הקואורדינטות הן בטווח התקין.
+        // Returns true if the coordinates are within the valid range of the sheet.
     }
 
     @Override
-    public int[][] depth() {                                       // מחזיר טבלה של "עומק" עבור כל תא בגיליון
-        int[][] ans = new int[width()][height()];                  // יוצר טבלה חדשה בגודל הגיליון.
-        for (int i = 0; i < width(); i++) {                        // לולאה על כל השורות.
-            for (int j = 0; j < height(); j++) {                    // לולאה על כל העמודות בשורה הנוכחית.
-                Cell cell = get(i, j);                              // מקבל את התא הנוכחי.
-                if (cell != null) {                                 // אם התא לא ריק.
+    public int[][] depth() {                                       // Returns a "depth" table for each cell in the sheet
+        int[][] ans = new int[width()][height()];                  // Creates a new table with the size of the sheet.
+        for (int i = 0; i < width(); i++) {                        // Loop through all rows.
+            for (int j = 0; j < height(); j++) {                    // Loop through all columns in the current row.
+                Cell cell = get(i, j);                              // Gets the current cell.
+                if (cell != null) {                                 // If the cell is not empty.
 
-                    ans[i][j] = cell.getOrder();                    // מחשב את סדר העיבוד של התא ושומר אותו.
+                    ans[i][j] = cell.getOrder();                    // Computes the order of processing for the cell and stores it.
 
                 }
             }
         }
-        return ans;                                                 // מחזיר את טבלת העומקים.
-
+        return ans;                                                 // Returns the depth table.
     }
 
     @Override
-    public void load(String fileName) throws IOException {                                 // טוען ערכים לגיליון מתוך קובץ טקסט
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {            // פותח את הקובץ לקריאה.
-            for (int i = 0; i < width(); i++) {                                             // לולאה על כל השורות.
-                for (int j = 0; j < height(); j++) {                                        // לולאה על כל העמודות בשורה הנוכחית.
-                    String line = br.readLine();                                            // קורא שורה אחת מהקובץ.
-                    if (line != null) {                                                    // אם יש שורה לקרוא.
-                        set(i, j, line);                                                    // מעדכן את הערך בתא.
-
+    public void load(String fileName) throws IOException {                                 // Loads values into the sheet from a text file
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {            // Opens the file for reading.
+            for (int i = 0; i < width(); i++) {                                             // Loop through all rows.
+                for (int j = 0; j < height(); j++) {                                        // Loop through all columns in the current row.
+                    String line = br.readLine();                                            // Reads a line from the file.
+                    if (line != null) {                                                    // If there is a line to read.
+                        set(i, j, line);                                                    // Updates the value in the cell.
                     }
                 }
             }
         }
     }
 
-    // שומר את כל ערכי הגיליון לקובץ טקסט
+    // Saves all sheet values to a text file
     @Override
     public void save(String fileName) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            // פותח את הקובץ לכתיבה.
+            // Opens the file for writing.
             for (int i = 0; i < width(); i++) {
-                // לולאה על כל השורות.
+                // Loop through all rows.
                 for (int j = 0; j < height(); j++) {
-                    // לולאה על כל העמודות בשורה הנוכחית.
+                    // Loop through all columns in the current row.
                     bw.write(value(i, j));
-                    // כותב את הערך של התא לקובץ.
+                    // Writes the value of the cell to the file.
                     bw.newLine();
-                    // מוסיף שורה חדשה בקובץ.
+                    // Adds a new line in the file.
                 }
             }
         }
     }
 
-    // מבצע הערכה מחדש ומחזיר את הערך של תא מסוים
+    // Re-evaluates and returns the value of a specific cell
     @Override
     public String eval(int x, int y) {
         if (isIn(x, y)) {
-            // אם המיקום בתחום הגיליון.
+            // If the position is within the sheet bounds.
             return value(x, y);
-            // מחזיר את הערך.
+            // Returns the value.
         }
         return Ex2Utils.EMPTY_CELL;
-        // מחזיר ערך ריק אם מחוץ לטווח.
+        // Returns an empty value if out of bounds.
     }
 }
