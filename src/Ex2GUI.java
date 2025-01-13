@@ -128,9 +128,12 @@ public class Ex2GUI {
 	 * @param yy קואורדינטת y של התא הנדרש.
 	 */
 	private static void inputCell(int xx, int yy) {
-		if (table.isIn(xx, yy)) { // בודק אם התא נמצא בטווח של הגיליון
-			Cell cc = table.get(xx, yy); // מקבל את התא שנמצא בקואורדינטות (xx, yy)
-			String ww = cord + ": " + cc.toString() + " : "; // יוצר מחרוזת שמציגה את פרטי התא הנוכחי
+		if (table.isIn(xx, yy)) { // בודק אם התא נמצא בטווח של הגיליו
+			Cell cc = table.get(xx, yy); // מקבל את התא שנמצא בקואורדינטות (xx, yy
+			cord = new Index2D_CellEntry(Ex2Utils.ABC[xx] + yy);
+
+			String ww = cord + ": " + cc.toString() + " : "; // יוצר מחרוזת שמציגה את פרטי התא הנוכחי אני הוספתי!!
+
 			StdDrawEx2.text(Ex2Utils.GUI_X_START, Ex2Utils.MAX_X - 1, ww); // מציג את פרטי התא בחלון הגרפי
 			StdDrawEx2.show(); // מעדכן את החלון הגרפי
 			if (Ex2Utils.Debug) { System.out.println(ww); } // במצב Debug, מציג את המידע על התא בקונסול
