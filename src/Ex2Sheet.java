@@ -2,25 +2,25 @@ import java.io.*;
 // ייבוא מחלקות לעבודה עם קלט ופלט של קבצים: FileReader, FileWriter, BufferedReader, BufferedWriter וכו'.
 
 // מחלקה Sheet_Ex2Sheet מממשת את הממשק Sheet
-public class Sheet_Ex2Sheet implements Sheet {
+public class Ex2Sheet implements Sheet {
     private Cell[][] table;
     // מערך דו-ממדי של אובייקטים מסוג Cell, מייצג את הגיליון כטבלה.
 
     // בנאי שמאפשר ליצור גיליון בגודל מותאם אישית
-    public Sheet_Ex2Sheet(int x, int y) {
-        table = new Cell_SCell[x][y];
+    public Ex2Sheet(int x, int y) {
+        table = new SCell[x][y];
         // אתחול הטבלה כמערך דו-ממדי של Cell_SCell בגודל x על y.
         for (int i = 0; i < x; i++) {
             // לולאה לעבור על כל השורות.
             for (int j = 0; j < y; j++) {
                 // לולאה לעבור על כל העמודות בשורה הנוכחית.
-                table[i][j] = new Cell_SCell(Ex2Utils.EMPTY_CELL);
+                table[i][j] = new SCell(Ex2Utils.EMPTY_CELL);
                 // יצירת תא ריק והכנסתו למקום המתאים בטבלה.
             }
         }
     }
 
-    public Sheet_Ex2Sheet() {     // בנאי ברירת מחדל: יוצר גיליון עם גודל מוגדר מראש (רוחב וגובה)
+    public Ex2Sheet() {     // בנאי ברירת מחדל: יוצר גיליון עם גודל מוגדר מראש (רוחב וגובה)
         this(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);             // קריאה לבנאי הראשי עם המידות הקבועות ב-Ex2Utils.
 
     }
@@ -48,7 +48,7 @@ public class Sheet_Ex2Sheet implements Sheet {
     // פונקציה שמחזירה תא לפי מחרוזת של קואורדינטות (למשל "A1")
     @Override
     public Cell get(String cords) {
-        Index2D_CellEntry index = new Index2D_CellEntry(cords);
+        CellEntry index = new CellEntry(cords);
         // ממיר את הקואורדינטות בפורמט טקסטואלי לאינדקסים מספריים.
         if (index.isValid()) {
             // בודק אם הקואורדינטות תקינות.
@@ -82,7 +82,7 @@ public class Sheet_Ex2Sheet implements Sheet {
     public void set(int x, int y, String s) {
         if (isIn(x, y)) {
             // בדיקה אם המיקום (x, y) בגבולות הטבלה.
-            table[x][y] = new Cell_SCell(s);
+            table[x][y] = new SCell(s);
             // יוצר תא חדש עם הערך הניתן ושומר אותו בטבלה.
             table[x][y].setData(s, this);
             // מעדכן את הנתונים של התא ומעביר הפניה לגיליון למקרה שיש תלות בתאים אחרים.

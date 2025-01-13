@@ -21,7 +21,7 @@ public class Ex2GUI {
 
 	/** הפונקציה הראשית להרצת תרגיל 2 */
 	public static void main(String[] a) {
-		table = new Sheet_Ex2Sheet(Ex2Utils.WIDTH, Ex2Utils.HEIGHT); // יצירת גיליון אלקטרוני חדש
+		table = new Ex2Sheet(Ex2Utils.WIDTH, Ex2Utils.HEIGHT); // יצירת גיליון אלקטרוני חדש
 		testSimpleGUI(table); // קריאה לפונקציה המפנה את הגיליון לגרפיקה
 	}
 
@@ -130,7 +130,7 @@ public class Ex2GUI {
 	private static void inputCell(int xx, int yy) {
 		if (table.isIn(xx, yy)) { // בודק אם התא נמצא בטווח של הגיליו
 			Cell cc = table.get(xx, yy); // מקבל את התא שנמצא בקואורדינטות (xx, yy
-			cord = new Index2D_CellEntry(Ex2Utils.ABC[xx] + yy);
+			cord = new CellEntry(Ex2Utils.ABC[xx] + yy);
 
 			String ww = cord + ": " + cc.toString() + " : "; // יוצר מחרוזת שמציגה את פרטי התא הנוכחי אני הוספתי!!
 

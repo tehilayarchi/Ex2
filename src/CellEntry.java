@@ -1,7 +1,7 @@
-public class Index2D_CellEntry implements Index2D {
+public class CellEntry implements Index2D {
     private final String index; // המחרוזת שמייצגת את האינדקס
 
-    public Index2D_CellEntry(String index) {
+    public CellEntry(String index) {
         this.index = index;
     }
 
@@ -70,4 +70,11 @@ public class Index2D_CellEntry implements Index2D {
         }
         return Integer.parseInt(index.substring(1));
     }
+
+    public static boolean isValidCellReference(String ref) {
+        // הפורמט החוקי: אותיות (גדולות או קטנות) ואחריהן מספר
+        return ref != null && ref.matches("[A-Za-z]+\\d+");
+    }
+
+
 }

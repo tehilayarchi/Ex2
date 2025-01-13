@@ -1,6 +1,9 @@
-public class Sheet_Test {
+
+
+
+public class Ex2Sheet_Test {
     public static void main(String[] args) {
-        Sheet_Ex2Sheet sheet = new Sheet_Ex2Sheet(5, 5);
+        Ex2Sheet sheet = new Ex2Sheet(5, 5);
 
         // בדיקת קביעת ערכים
         sheet.set(0, 0, "Hello");

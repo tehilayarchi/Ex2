@@ -1,11 +1,23 @@
-public class Cell_SCell implements Cell {
+/**
+ * Represents a spreadsheet cell that can store text, numbers, or formulas.
+ * Handles formula evaluation, data type detection, and referencing other cells.
+ *
+ * Methods:
+ * - setData(String s, Sheet sheet): Updates cell content and recalculates its type and value.
+ * - getData(): Returns the original input of the cell.
+ * - updateTypeAndValue(): Determines cell type (text, number, or formula) and updates its value.
+ * - evalForm(String form, Sheet sheet): Evaluates a formula using a sheet for cell references.
+ * - evalExpr(String exp): Evaluates mathematical expressions with nested parentheses and operators.
+ */
+
+public class SCell implements Cell {
     private String data; // הערך המחושב המוצג בתא
     private String originalData; // הערך המקורי שהוזן
     private int type;
     private Sheet sheet;
 
     // בנאי: יוצר תא חדש עם נתונים התחלתיים
-    public Cell_SCell(String data) {
+    public SCell(String data) {
         setData(data);
     }
 
@@ -13,6 +25,7 @@ public class Cell_SCell implements Cell {
     public String getData() {
         return originalData; // מחזיר את הערך המקורי שהוזן
     }
+
 
     @Override
     public void setData(String s, Sheet sheet) {
@@ -46,47 +59,49 @@ public class Cell_SCell implements Cell {
     public void setOrder(int t) {
         // לא נדרש יישום
     }
-
-
-    // עדכון סוג התא והתוצאה המחושבת
     public void updateTypeAndValue() {
-        if (originalData == null || originalData.isEmpty()) {  // אם originalData הוא null או ריק, אז נתייחס אליו כטקסט ריק
-            data = ""; // מגדיר את התוצאה כריקה
-            type = Ex2Utils.TEXT; // סוג הערך הוא טקסט
-        }
-        else if (isFormula(originalData)) {// אם originalData הוא נוסחה (מתחיל ב- "=")
+        if (originalData == null || originalData.isEmpty()) {
+            // תא ריק
+            data = "";
             type = Ex2Utils.TEXT;
-            if (sheet == null) {                   // אם אין גיליון (sheet), יש שגיאה בנוסחה
-                type = Ex2Utils.ERR_FORM_FORMAT;   // סוג השגיאה הוא שגיאה בנוסחה
-                data = Ex2Utils.ERR_FORM; // התוצאה היא הודעת שגיאה
+        } else if (isFormula(originalData)) {
+            // זיהוי נוסחה
+            type = Ex2Utils.FORM;
+
+            // חישוב ערך הנוסחה
+            if (sheet == null) {
+                // אין גיליון -> שגיאה
+                data = Ex2Utils.ERR_FORM;
+                type = Ex2Utils.ERR_FORM_FORMAT;
             } else {
-                String result = evalForm(originalData, sheet);  // אם יש גיליון, מנסים לחשב את התוצאה של הנוסחה
-                if (result.equals("ERROR")) {                                  
-                    type = Ex2Utils.ERR_FORM_FORMAT; // סוג השגיאה הוא שגיאה בנוסחה
-                    data = Ex2Utils.ERR_FORM; // התוצאה היא הודעת שגיאה
+                String result = evalForm(originalData, sheet); // חישוב הנוסחה
+                if (result.equals("ERROR") || result.equals(Ex2Utils.ERR_FORM)) {
+                    // שגיאה בערך הנוסחה
+                    data = Ex2Utils.ERR_FORM;
+                    type = Ex2Utils.ERR_FORM_FORMAT;
                 } else {
-                    data = result; // אם החישוב הצליח, נשמור את התוצאה
-                    type = Ex2Utils.NUMBER; // סוג הערך הוא מספר
+                    // תוצאה תקינה של נוסחה
+                    data = result;
                 }
             }
-        }
-        else if (isNumber(originalData)) {                          // אם originalData הוא מספר
+        } else if (isNumber(originalData)) {
+            // זיהוי מספר
             try {
-                // מנסה להמיר את originalData למספר
                 double number = Double.parseDouble(originalData);
-                data = String.valueOf(number); // שמירה של המספר כתוצאה
-                type = Ex2Utils.NUMBER; // סוג הערך הוא מספר
+                data = String.valueOf(number);
+                type = Ex2Utils.NUMBER;
             } catch (NumberFormatException e) {
-                // אם ההמרה נכשלת (למשל במקרה של טקסט), נשמור את ה-originalData כטקסט רגיל
-                data = originalData; // טקסט רגיל
-                type = Ex2Utils.TEXT; // סוג הערך הוא טקסט
+                // במקרה של שגיאה -> טקסט
+                data = originalData;
+                type = Ex2Utils.TEXT;
             }
-        }
-        else {                                     // אם לא נוסחה ולא מספר, אז מדובר בטקסט רגיל
-            data = originalData; // נשמור את הנתון כטקסט רגיל
-            type = Ex2Utils.TEXT; // סוג הערך הוא טקסט
+        } else {
+            // כל דבר אחר -> טקסט רגיל
+            data = originalData;
+            type = Ex2Utils.TEXT;
         }
     }
+
 
 
     public boolean isNumber(String str) {
@@ -111,12 +126,18 @@ public class Cell_SCell implements Cell {
             // החלפת כתובות תאים בערכים שלהם
             form = replaceCellReferences(form, sheet);
 
+            // אם יש ERR_FORM, אז הפונקציה תעצר ותשיב את השגיאה
+            if (form.contains(Ex2Utils.ERR_FORM)) {
+                return Ex2Utils.ERR_FORM;
+            }
+
             double result = evalExpr(form);
             return String.valueOf(result);
         } catch (Exception e) {
             return "ERROR";
         }
     }
+
 
     private static String replaceCellReferences(String form, Sheet sheet) {
         StringBuilder updatedForm = new StringBuilder();
@@ -126,8 +147,8 @@ public class Cell_SCell implements Cell {
             if (token.matches("[A-Za-z]+\\d+")) { // זיהוי כתובת תא
                 Cell cell = sheet.get(token);
                 if (cell != null) {
-                    // מחליף את `cell.getData()` בתוצאה המחושבת של התא
-                    String cellValue = cell.getType() == Ex2Utils.NUMBER ? cell.getData() : "0";
+                    // אם התא קיים, נבדוק אם הוא ריק או לא
+                    String cellValue = cell.getData().isEmpty() ? Ex2Utils.ERR_FORM : cell.getData();
                     updatedForm.append(cellValue);
                 } else {
                     updatedForm.append("0"); // תא ריק
@@ -138,6 +159,7 @@ public class Cell_SCell implements Cell {
         }
         return updatedForm.toString();
     }
+
 
 
     public static double evalExpr(String exp) {
